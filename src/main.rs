@@ -1,6 +1,6 @@
-
 use clap::Parser;
 use std::path::{Path, PathBuf};
+use std::mem;
 
 /// CLI for Open Log (olog)
 
@@ -26,6 +26,23 @@ fn main() {
         println!("{}", name)
     }
 
+    let mut logs: Vec<loglib::Log> = vec!();
+    let log = loglib::Log::new(
+        None,
+        None,
+        Some(String::from("Olog")),
+        None,
+        Some(String::from("CLI")),
+        None,
+        None,
+        Some(String::from("Coding")),
+        Some(String::from("Adding Entry")),
+        None,
+        Some(8),
+        Some(String::from("Not much mention. Building the types so the fake cli has something to work with.")),
+    );
 
+    println!("{:?}", log);
+    println!("{}", mem::size_of_val(&log));
 }
 
