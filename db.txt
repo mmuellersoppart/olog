@@ -1,0 +1,3 @@
+user_id,organization_id,organization,project_id,project,subproject_id,subproject,activity,detail1,detail2,spirits,notes,start,end
+,,Olog,,CLI,,,Coding,Adding Entry,,8,Not much mention. Building the types so the fake cli has something to work with.,2022-11-05T16:31:08.037351Z,
+,,Olog,,CLI,,,Coding,Adding Entry,,8,Not much mention. Building the types so the fake cli has something to work with.,2022-11-05T16:32:11.646380Z,

@@ -1,23 +1,25 @@
-use chrono::prelude::*;
+use std::fmt::{Display, Formatter};
 
+use chrono::prelude::*;
 use chrono::Utc;
 
-use uuid::{uuid, Uuid};
+use csv::Writer;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Log {
-    pub user_id: Option<Uuid>,
+    pub user_id: Option<u64>,
 
     // fk to organization
-    pub organization_id: Option<Uuid>,
+    pub organization_id: Option<u64>,
     pub organization: Option<String>,
 
     // fk to project
-    pub project_id: Option<Uuid>,
+    pub project_id: Option<u64>,
     pub project: Option<String>,
 
     // fk subproject
-    pub subproject_id: Option<Uuid>,
+    pub subproject_id: Option<u64>,
     pub subproject: Option<String>,
 
     pub activity: Option<String>,
@@ -30,13 +32,14 @@ pub struct Log {
 }
 
 impl Log {
+
     pub fn new(
-        user_id: Option<Uuid>,
-        organization_id: Option<Uuid>,
+        user_id: Option<u64>,
+        organization_id: Option<u64>,
         organization: Option<String>,
-        project_id: Option<Uuid>,
+        project_id: Option<u64>,
         project: Option<String>,
-        subproject_id: Option<Uuid>,
+        subproject_id: Option<u64>,
         subproject: Option<String>,
         activity: Option<String>,
         detail1: Option<String>,
@@ -60,6 +63,55 @@ impl Log {
             start: Utc::now(),
             end: None,
         }
+    }
+}
 
+
+
+impl Display for Log {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+
+        let user_id = match self.user_id {
+            Some(ref id) => id.to_string(),
+            None => "".to_string()
+        };
+
+        let organization_id = match self.organization_id {
+            Some(ref id) => id.to_string(),
+            None => "".to_string()
+        };
+
+        let organization = match self.organization {
+            Some(ref id) => id,
+            None => ""
+        };
+
+        let project_id = match self.project_id {
+            Some(ref id) => id.to_string(),
+            None => "".to_string()
+        };
+
+        let project = match self.project {
+            Some(ref name) => name,
+            None => ""
+        } ;
+
+        write!(f, "{},{},{},{},{}",
+              user_id,
+              organization_id,
+              organization,
+              project_id,
+              project,
+              // // fk subproject
+              // self.subproject_id,
+              // self.subproject,
+              // self.activity,
+              // self.detail1,
+              // self.detail2,
+              // self.spirits,
+              // self.notes,
+              // self.start,
+              // self.end,
+        )
     }
 }
