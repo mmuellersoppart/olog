@@ -1,6 +1,6 @@
 use std::error::Error;
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{Read, Write, stdin};
 use std::mem;
 use std::path::{Path, PathBuf};
 
@@ -65,6 +65,16 @@ fn main() {
     let mut db= connect_to_db(PathBuf::from(path));
     let in_memory = load(&mut db).unwrap();
 
+    let mut input_buffer = String::new();
+    loop {
+        println!("I want your input");
+        let stdin = stdin(); // We get `Stdin` here.
+        stdin.read_line(&mut input_buffer).expect("Failed to read std input.");
+
+        if input_buffer == "hi\n" {
+            break
+        }
+    }
 
 
     // do log
