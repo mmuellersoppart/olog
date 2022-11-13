@@ -1,6 +1,5 @@
-use std::error::Error;
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write, stdin};
+use std::io::{Read, Write, stdin, ErrorKind};
 use std::mem;
 use std::path::{Path, PathBuf};
 
@@ -24,6 +23,37 @@ struct Args {
     db: Option<String>
 }
 
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
+    #[error("The command submitted cannot be parsed.")]
+    InvalidCommand,
+}
+
+enum CMD {
+    W,
+    R,
+    A,
+}
+
+impl CMD {
+    fn to_value(&self) -> &'static str {
+        match self {
+            CMD::W => "work",
+            CMD::R => "rest",
+            CMD::A => "add",
+        }
+    }
+
+    fn from_string(input: &str) -> Result<CMD, Error> {
+        match input.to_lowercase().as_str() {
+            "work" => Ok(CMD::W),
+            "read" => Ok(CMD::R),
+            "add" => Ok(CMD::A),
+            _ => Err(Error::InvalidCommand)
+        }
+    }
+}
+
 fn connect_to_db(path: PathBuf) -> File {
     OpenOptions::new()
         .create(true)
@@ -33,7 +63,7 @@ fn connect_to_db(path: PathBuf) -> File {
         .expect("Could not connect to the database.")
 }
 
-fn load(f: &mut File) -> Result<Vec<loglib::Log>, Box<dyn Error>> {
+fn load(f: &mut File) -> Vec<loglib::Log> {
 
     // TODO: read csv and deserialize to logs
     let mut rdr = csv::Reader::from_reader(f);
@@ -46,8 +76,7 @@ fn load(f: &mut File) -> Result<Vec<loglib::Log>, Box<dyn Error>> {
             Ok(t) => logs.push(t)
         }
     }
-    Ok(logs)
-
+    logs
 }
 
 fn main() {
@@ -63,7 +92,7 @@ fn main() {
     let path = args.db.unwrap_or("./db.txt".to_string());
     println!("Connecting to the db at {}", path);
     let mut db= connect_to_db(PathBuf::from(path));
-    let in_memory = load(&mut db).unwrap();
+    let in_memory = load(&mut db);
 
     let mut input_buffer = String::new();
     loop {
